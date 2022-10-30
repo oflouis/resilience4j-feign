@@ -1,0 +1,47 @@
+resilience4j:
+  circuitbreaker:
+    configs:
+      base:
+        sliding-window-type: COUNT_BASED # COUNT_BASED(default) or TIME_BASED
+        sliding-window-size: 100 # calls or seconds
+        minimum-number-of-calls: 100
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 60s # open -> half-open
+        permitted-number-of-calls-in-half-open-state: 10
+        max-wait-duration-in-half-open-state: 1ms # half-open -> open
+        slow-call-rate-threshold: 100
+        slow-call-duration-threshold: 60s
+        event-consumer-buffer-size: 10
+    instances:
+      httpbin:
+        base-config: base
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 5
+        max-wait-duration-in-half-open-state: 1s
+        slow-call-rate-threshold: 80
+        slow-call-duration-threshold: 3s
+        event-consumer-buffer-size: 100
+  ratelimiter:
+    configs:
+      base:
+        timeout-duration: 5s
+        limit-refresh-period: 500ns
+        limit-for-period: 50
+        event-consumer-buffer-size: 10
+    instances:
+      httpbin:
+        base-config: base
+        limit-refresh-period: 1s
+        limit-for-period: 20
+        timeout-duration: 10ms
+        event-consumer-buffer-size: 100
+
+logging:
+  level:
+    root: info
+    io.github.resilience4j: debug
+    feign.okhttp: debug
+#    okhttp3: debug
